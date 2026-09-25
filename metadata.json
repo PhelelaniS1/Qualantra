@@ -1,0 +1,6 @@
+{
+  "name": "QUALANTRA — Learn. Teach. Connect.",
+  "description": "Premium South African digital education platform connecting professional educators and learners in focused 1:10 live online classrooms.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
