@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from 'react-oidc-context';
 import { AppRoute, LearnerPlan, LearningResourceItem } from '../types';
 import { SA_LANGUAGES } from '../data/languagesData';
 import {
@@ -39,6 +40,8 @@ const API_BASE_URL =
 export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
   onNavigate,
 }) => {
+  const auth = useAuth();
+
   // ---------------------------------------------------------
   // Account / plan state
   // ---------------------------------------------------------
@@ -68,7 +71,6 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
   // ---------------------------------------------------------
   // Ali state
   //
-  // IMPORTANT:
   // Ali remains connected to the real AWS backend.
   // No fictional conversation is preloaded.
   // ---------------------------------------------------------
@@ -101,46 +103,6 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
       setUpgradeTriggerReason(resource.title);
       setShowUpgradeModal(true);
     }
-  };
-
-  // ---------------------------------------------------------
-  // Get Cognito access token
-  // ---------------------------------------------------------
-
-  const getCognitoToken = (): string | null => {
-    const keys = Object.keys(localStorage);
-
-    const cognitoKey = keys.find(
-      (key) =>
-        key.includes('accessToken') ||
-        key.includes('access_token')
-    );
-
-    if (cognitoKey) {
-      const token = localStorage.getItem(cognitoKey);
-
-      if (token) {
-        return token;
-      }
-    }
-
-    const sessionKeys = Object.keys(sessionStorage);
-
-    const sessionCognitoKey = sessionKeys.find(
-      (key) =>
-        key.includes('accessToken') ||
-        key.includes('access_token')
-    );
-
-    if (sessionCognitoKey) {
-      const token = sessionStorage.getItem(sessionCognitoKey);
-
-      if (token) {
-        return token;
-      }
-    }
-
-    return null;
   };
 
   // ---------------------------------------------------------
@@ -177,7 +139,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
     setAliLoading(true);
 
     try {
-      const token = getCognitoToken();
+      const token = auth.user?.access_token;
 
       if (!token) {
         throw new Error(
@@ -1019,11 +981,12 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 </div>
 
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     setUpgradeTriggerReason(
                       'Teacher Engagement'
-                    ) || setShowUpgradeModal(true)
-                  }
+                    );
+                    setShowUpgradeModal(true);
+                  }}
                   className="w-full py-2.5 bg-[#1C1917] text-white rounded-md text-xs font-semibold hover:bg-black transition-colors cursor-pointer text-center"
                 >
                   View Teacher Support Options
