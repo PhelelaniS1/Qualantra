@@ -1,0 +1,247 @@
+import shot1Image from '@/src/assets/images/shot1_teacher_perspective_1790274417524.jpg';
+import shot2Image from '@/src/assets/images/shot2_learner_perspective_1790274430057.jpg';
+import shot3Image from '@/src/assets/images/shot3_classroom_overview_1790274441641.jpg';
+import shot4Image from '@/src/assets/images/shot4_admin_perspective_1790274454325.jpg';
+import shot5Image from '@/src/assets/images/shot5_connected_ecosystem_1790274464411.jpg';
+import signfusionImage from '@/src/assets/images/signfusion_sasl_teacher_1790278971011.jpg';
+import teacherPlanningImage from '@/src/assets/images/teacher_planning_ali_1790278984256.jpg';
+import qualantraLogoImage from '@/src/assets/images/qualantra_brand_logo_1790279767306.jpg';
+import qualantraSimpleLogoImage from '@/src/assets/images/qualantra_simple_logo_1790279875190.jpg';
+
+import { Shot, Learner, Educator, ActiveClassroomState, TeachingOpportunity } from '../types';
+
+export const ASSET_IMAGES = {
+  shot1: shot1Image,
+  shot2: shot2Image,
+  shot3: shot3Image,
+  shot4: shot4Image,
+  shot5: shot5Image,
+  signfusion: signfusionImage,
+  teacherPlanning: teacherPlanningImage,
+  logo: qualantraSimpleLogoImage,
+  logoEmblem: qualantraLogoImage,
+  simpleLogo: qualantraSimpleLogoImage,
+};
+
+export const HERO_SHOTS: Shot[] = [
+  {
+    id: 1,
+    slug: 'teachers-perspective',
+    title: 'Teacher Perspective',
+    perspective: 'Educator',
+    startTime: 0.0,
+    endTime: 2.0,
+    imageSrc: shot1Image,
+    description: 'A professional educator leads an online class from a bright, uncluttered studio environment. In front of her is a dedicated interface displaying exactly 10 remote learners. She speaks with calm confidence and natural hand gestures.',
+    cameraMovement: 'Subtle slow dolly push-in (0.8% scale over 2.0s) with micro horizontal stabilization drift.',
+    cinematographyNotes: 'Warm diffused natural daylight, 50mm f/2.0 shallow depth of field, neutral tones with soft wood textures.',
+    emotionalTone: 'Authoritative, warm, engaging, poised.',
+  },
+  {
+    id: 2,
+    slug: 'learners-perspective',
+    title: 'Learner Perspective',
+    perspective: 'Learner',
+    startTime: 2.0,
+    endTime: 4.0,
+    imageSrc: shot2Image,
+    description: 'A high school learner sits attentively at a clean wooden desk near a morning sunlit window, pen in hand, listening intently to the educator. The screen subtly shows her live connection to the 10-person peer cohort.',
+    cameraMovement: 'Gentle right-to-left organic pan with subtle focal breathing.',
+    cinematographyNotes: 'Natural window key light, documentary 35mm stillness, authentic South African domestic setting.',
+    emotionalTone: 'Focused, curious, calm, included.',
+  },
+  {
+    id: 3,
+    slug: 'classroom-overview',
+    title: 'Classroom Overview',
+    perspective: 'Synchronous Cohort',
+    startTime: 4.0,
+    endTime: 5.6,
+    imageSrc: shot3Image,
+    description: 'Cinematic wide vista revealing the full human connection: the educator and all 10 learners participating in synchronous harmony. Technology recedes to the background; people and learning take center stage.',
+    cameraMovement: 'Gradual slow elevation pull-back revealing harmonious spatial cohesion.',
+    cinematographyNotes: 'Balanced multi-room natural exposure, warm whites, zero synthetic neon, authentic classroom presence.',
+    emotionalTone: 'Connected, unified, collaborative, inspiring.',
+  },
+  {
+    id: 4,
+    slug: 'admin-perspective',
+    title: 'Administrator Perspective',
+    perspective: 'School Administrator',
+    startTime: 5.6,
+    endTime: 7.0,
+    imageSrc: shot4Image,
+    description: 'A professional administrator reviews the live classroom overview from a clean, understated terminal. Active class rosters, syllabus progress, and educator assignment are visible with refined typography and zero fake graphs.',
+    cameraMovement: 'Over-the-shoulder micro rack focus from foreground desk plant to clean monitor.',
+    cinematographyNotes: 'Clean architectural lines, soft ambient fill, restrained corporate aesthetic, tabular precision.',
+    emotionalTone: 'Trustworthy, organized, reliable, transparent.',
+  },
+  {
+    id: 5,
+    slug: 'final-moment',
+    title: 'Unified Ecosystem',
+    perspective: 'Brand Horizon',
+    startTime: 7.0,
+    endTime: 8.0,
+    imageSrc: shot5Image,
+    description: 'The visual transitions into an expansive, airy composition with generous negative space. The QUALANTRA ethos emerges naturally: Learn. Teach. Connect. Built to sit gracefully beneath live website typography.',
+    cameraMovement: 'Infinite slow breathing drift, dissolving seamlessly back into the opening frame.',
+    cinematographyNotes: 'Warm morning backlighting, soft natural bokeh, maximum visual breathing room on left and center.',
+    emotionalTone: 'Enduring, prestigious, grounded, human.',
+  },
+];
+
+export const QUALANTRA_EDUCATOR: Educator = {
+  name: 'Ms. Thandeka Dlamini',
+  title: 'Lead Educator · Physical Sciences',
+  qualifications: 'BSc (Hons) Chemistry & Physics (Wits), PGCE (UCT), SACE Registered',
+  location: 'Johannesburg Studio',
+  subject: 'Grade 11 Physical Sciences',
+  currentLesson: 'Newtonian Mechanics: Momentum and Impulse Applications',
+};
+
+export const QUALANTRA_LEARNERS: Learner[] = [
+  {
+    id: 1,
+    name: 'Liam van der Merwe',
+    location: 'Cape Town, Western Cape',
+    grade: 'Grade 11',
+    focusArea: 'Vector Resolution and Free Body Diagrams',
+    currentActivity: 'Annotating vector worksheet',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 2,
+    name: 'Nandi Sithole',
+    location: 'Durban, KwaZulu-Natal',
+    grade: 'Grade 11',
+    focusArea: 'Conservation of Momentum',
+    currentActivity: 'Submitting worked impulse solution',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 3,
+    name: 'Kagiso Molefe',
+    location: 'Soweto, Gauteng',
+    grade: 'Grade 11',
+    focusArea: 'Elastic vs Inelastic Collisions',
+    currentActivity: 'Active on audio response',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 4,
+    name: 'Keisha Pillay',
+    location: 'Pietermaritzburg, KZN',
+    grade: 'Grade 11',
+    focusArea: 'Kinetic Energy Dissipation',
+    currentActivity: 'Reviewing practice problem 3',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 5,
+    name: 'Johan du Plessis',
+    location: 'Pretoria East, Gauteng',
+    grade: 'Grade 11',
+    focusArea: 'Impulse Momentum Theorem',
+    currentActivity: 'Synchronized notebook entry',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 6,
+    name: 'Ayanda Mthembu',
+    location: 'Gqeberha, Eastern Cape',
+    grade: 'Grade 11',
+    focusArea: 'Newton Second Law in Terms of Momentum',
+    currentActivity: 'Posing clarification question',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 7,
+    name: 'Tariro Moyo',
+    location: 'Polokwane, Limpopo',
+    grade: 'Grade 11',
+    focusArea: 'Velocity Time Gradient Derivatives',
+    currentActivity: 'Verified calculation step',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 8,
+    name: 'Sipho Ndlovu',
+    location: 'Bloemfontein, Free State',
+    grade: 'Grade 11',
+    focusArea: 'Mathematical Modeling in SI Units',
+    currentActivity: 'Screen sharing numerical proof',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 9,
+    name: 'Anika Patel',
+    location: 'Sandton, Gauteng',
+    grade: 'Grade 11',
+    focusArea: 'Experimental Uncertainty and Vectors',
+    currentActivity: 'Active in shared whiteboard',
+    connectionStatus: 'Synchronized',
+  },
+  {
+    id: 10,
+    name: 'Lerato Khumalo',
+    location: 'East London, Eastern Cape',
+    grade: 'Grade 11',
+    focusArea: 'Applied Forces in Vehicle Safety',
+    currentActivity: 'Synthesizing real world case',
+    connectionStatus: 'Synchronized',
+  },
+];
+
+export const ACTIVE_CLASSROOM_DATA: ActiveClassroomState = {
+  lessonTitle: 'Grade 11 Physical Sciences · Session 14',
+  subject: 'Physical Sciences (CAPS and IEB Compliant)',
+  curriculum: 'National Senior Certificate and IEB Standards',
+  educator: QUALANTRA_EDUCATOR,
+  learners: QUALANTRA_LEARNERS,
+  durationMinutes: 45,
+  elapsedMinutes: 28,
+};
+
+export const TEACHING_OPPORTUNITIES: TeachingOpportunity[] = [
+  {
+    id: 'opp-1',
+    title: 'Senior Physical Sciences Specialist',
+    engagementType: 'Part-time',
+    subject: 'Physical Sciences (Grades 10 to 12)',
+    grades: 'Grades 10 to 12',
+    curriculum: 'CAPS and IEB Curriculum',
+    locationScope: 'National Remote Pods',
+    allocation: '2 pods · 20 learners total',
+  },
+  {
+    id: 'opp-2',
+    title: 'Mathematics Advanced Programme Lead',
+    engagementType: 'Full-time',
+    subject: 'Mathematics and AP Mathematics',
+    grades: 'Grades 11 and 12',
+    curriculum: 'IEB AP Mathematics',
+    locationScope: 'National Remote Pods',
+    allocation: '4 pods · 40 learners total',
+  },
+  {
+    id: 'opp-3',
+    title: 'Deaf Educator and SASL Specialist',
+    engagementType: 'Specialist Pod',
+    subject: 'Life Sciences and Natural Sciences in SASL',
+    grades: 'Grades 8 to 11',
+    curriculum: 'SignFusion Bilingual Framework',
+    locationScope: 'South African Sign Language Cohort',
+    allocation: '1 pod · 10 learners total',
+  },
+  {
+    id: 'opp-4',
+    title: 'Foundation Phase Vernacular Reading Specialist',
+    engagementType: 'One-to-One',
+    subject: 'Home Language Reading Support (isiZulu and Sesotho)',
+    grades: 'Grades 3 to 5',
+    curriculum: 'DBE Reading Benchmarks',
+    locationScope: 'Targeted Remediation',
+    allocation: '5 individual learners',
+  },
+];
