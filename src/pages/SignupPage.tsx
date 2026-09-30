@@ -26,7 +26,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   // Common fields
-  const [province, setProvince] = useState<string>('Gauteng');
+  const [province, setProvince] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
   // Learner-only fields
@@ -34,40 +34,31 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
   const [learnerName, setLearnerName] = useState<string>('');
   const [learnerEmail, setLearnerEmail] = useState<string>('');
   const [learnerPhone, setLearnerPhone] = useState<string>('');
-  const [learnerGrade, setLearnerGrade] = useState<string>('Grade 11');
-  const [learnerSubject, setLearnerSubject] = useState<string>(
-    'Pure Mathematics & Physical Sciences'
-  );
-  const [learnerLanguage, setLearnerLanguage] = useState<string>(
-    'English & isiZulu'
-  );
+  const [learnerGrade, setLearnerGrade] = useState<string>('');
+  const [learnerSubject, setLearnerSubject] = useState<string>('');
+  const [learnerLanguage, setLearnerLanguage] = useState<string>('');
 
   // Parent-only fields
   const [parentName, setParentName] = useState<string>('');
   const [parentEmail, setParentEmail] = useState<string>('');
   const [parentPhone, setParentPhone] = useState<string>('');
   const [childName, setChildName] = useState<string>('');
-  const [childGrade, setChildGrade] = useState<string>('Grade 11');
-  const [parentGoal, setParentGoal] = useState<string>(
-    'Matric Exam Preparation & Core Subject Mastery'
-  );
+  const [childGrade, setChildGrade] = useState<string>('');
+  const [parentGoal, setParentGoal] = useState<string>('');
 
   // Teacher-only fields
   const [teacherName, setTeacherName] = useState<string>('');
   const [teacherEmail, setTeacherEmail] = useState<string>('');
   const [teacherPhone, setTeacherPhone] = useState<string>('');
   const [saceNumber, setSaceNumber] = useState<string>('');
-  const [teacherSubject, setTeacherSubject] =
-    useState<string>('Physical Sciences');
+  const [teacherSubject, setTeacherSubject] = useState<string>('');
 
   // School-only fields
   const [schoolName, setSchoolName] = useState<string>('');
   const [adminName, setAdminName] = useState<string>('');
   const [adminEmail, setAdminEmail] = useState<string>('');
   const [adminPhone, setAdminPhone] = useState<string>('');
-  const [cohortSize, setCohortSize] = useState<string>(
-    '40 Learners (4 Pods)'
-  );
+  const [cohortSize, setCohortSize] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,8 +95,6 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
     }
 
     try {
-      // Remember the role selected during registration so that
-      // the authenticated user can be returned to the correct portal.
       localStorage.setItem('qualantra_role', role);
 
       await registerUser(email, password, name, phoneNumber);
@@ -113,11 +102,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
     } catch (error: unknown) {
       console.error('QUALANTRA account creation failed:', error);
 
-      if (
-        error &&
-        typeof error === 'object' &&
-        'name' in error
-      ) {
+      if (error && typeof error === 'object' && 'name' in error) {
         const cognitoError = error as { name?: string };
 
         if (cognitoError.name === 'UsernameExistsException') {
@@ -150,7 +135,6 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
   return (
     <div className="min-h-screen bg-[#FAF9F5] pt-28 pb-16 px-6 sm:px-8 flex items-center justify-center">
       <div className="w-full max-w-xl bg-white border border-[#E7E3DA] rounded-xl p-8 sm:p-10 shadow-sm space-y-6">
-        {/* Header navigation & title */}
         <div>
           <button
             onClick={() => onNavigate('/')}
@@ -173,13 +157,13 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
           <p className="text-xs sm:text-sm text-[#57534E]">
             {role === 'learner' &&
-              'Register as an independent student to be placed into focused 1 teacher, 10 learners online subject pods.'}
+              'Register as a learner to access QUALANTRA learning services and subject-based classes.'}
             {role === 'parent' &&
-              'Register as a parent or guardian to enrol your child, track live pod attendance, and view weekly educator diagnostics.'}
+              'Register as a parent or guardian to support your learner and access parent services.'}
             {role === 'teacher' &&
-              'Apply as a SACE-qualified educator to instruct small 1 teacher, 10 learners cohorts with fair compensation.'}
+              'Apply as an educator to teach learners through QUALANTRA.'}
             {role === 'school' &&
-              'Partner with QUALANTRA to bring focused 1 teacher, 10 learners pods to your school or bursary cohort.'}
+              'Register an institution to explore QUALANTRA learning and sponsorship services.'}
           </p>
         </div>
 
@@ -197,10 +181,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
                 <p className="text-xs sm:text-sm text-[#57534E] leading-relaxed max-w-md mx-auto">
                   Thank you, <strong>{learnerName || 'Learner'}</strong>. Your
-                  QUALANTRA account has been created for{' '}
-                  <strong>{learnerGrade}</strong> in {province}. Please check
-                  your email for the verification instructions before signing
-                  in.
+                  QUALANTRA account has been created. Please check your email
+                  for verification instructions before signing in.
                 </p>
 
                 <div className="pt-2">
@@ -221,11 +203,9 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                 </h2>
 
                 <p className="text-xs sm:text-sm text-[#57534E] leading-relaxed max-w-md mx-auto">
-                  Thank you, <strong>{parentName || 'Parent'}</strong>. Your
-                  guardian account has been created. Your child,{' '}
-                  <strong>{childName || 'your learner'}</strong> ({childGrade}),
-                  has been registered for pod placement. Please check your
-                  email for verification instructions.
+                  Thank you, <strong>{parentName || 'Parent / Guardian'}</strong>.
+                  Your account has been created. Please check your email for
+                  verification instructions.
                 </p>
 
                 <div className="pt-2">
@@ -247,9 +227,9 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
                 <p className="text-xs sm:text-sm text-[#57534E] leading-relaxed max-w-md mx-auto">
                   Thank you, <strong>{teacherName || 'Educator'}</strong>. Your
-                  account and SACE registration details have been received for{' '}
-                  <strong>{teacherSubject}</strong> pods. Please check your
-                  email for verification instructions.
+                  QUALANTRA educator account has been created. Any required
+                  educator verification will be handled through the
+                  appropriate process.
                 </p>
 
                 <div className="pt-2">
@@ -270,10 +250,9 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                 </h2>
 
                 <p className="text-xs sm:text-sm text-[#57534E] leading-relaxed max-w-md mx-auto">
-                  Thank you, <strong>{adminName || 'Administrator'}</strong>{' '}
-                  from <strong>{schoolName || 'Institution'}</strong>. Your
-                  institutional account has been created. Please check the
-                  administrator email for verification instructions.
+                  Thank you, <strong>{adminName || 'Administrator'}</strong>.
+                  Your institutional account has been created. Please check
+                  the administrator email for verification instructions.
                 </p>
 
                 <div className="pt-2">
@@ -289,14 +268,12 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5 text-xs">
-            {/* Clear Separation between Learner and Parent */}
             <div>
               <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#78716C] mb-2">
                 I am applying / registering as:
               </label>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {/* 1. LEARNER ONLY */}
                 <button
                   type="button"
                   onClick={() => {
@@ -316,10 +293,9 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         : 'text-[#78716C]'
                     }`}
                   />
-                  <span className="text-xs">Learner Only</span>
+                  <span className="text-xs">Learner</span>
                 </button>
 
-                {/* 2. PARENT ONLY */}
                 <button
                   type="button"
                   onClick={() => {
@@ -339,10 +315,9 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         : 'text-[#78716C]'
                     }`}
                   />
-                  <span className="text-xs">Parent Only</span>
+                  <span className="text-xs">Parent / Guardian</span>
                 </button>
 
-                {/* 3. EDUCATOR */}
                 <button
                   type="button"
                   onClick={() => {
@@ -365,7 +340,6 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <span className="text-xs">Educator</span>
                 </button>
 
-                {/* 4. SCHOOL / SPONSOR */}
                 <button
                   type="button"
                   onClick={() => {
@@ -385,29 +359,27 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         : 'text-[#78716C]'
                     }`}
                   />
-                  <span className="text-xs">School / Sponsor</span>
+                  <span className="text-xs">School / Institution</span>
                 </button>
               </div>
             </div>
 
-            {/* Role-Specific Context Banner */}
             <div className="p-3 bg-[#FAF9F5] border border-[#E7E3DA] rounded-md text-[11px] text-[#57534E] flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-[#8C5E38] shrink-0" />
+
               <span>
                 {role === 'learner' &&
-                  'You are registering directly as a student. All pod assignments and quizzes will belong to your personal learner account.'}
+                  'Register your learner profile and select the subjects and access plan that apply to you.'}
                 {role === 'parent' &&
-                  'You are registering as a parent/guardian. You will be able to enroll your children, view educator diagnostics, and track attendance.'}
+                  'Register as a parent or guardian and provide the learner information required for enrolment.'}
                 {role === 'teacher' &&
-                  'You are applying as an educator. You will instruct capped 1 teacher, 10 learners pods and receive competitive compensation.'}
+                  'Apply as an educator and provide your professional registration and teaching information.'}
                 {role === 'school' &&
-                  'You are registering as an institution. Manage multiple 1 teacher, 10 learners cohorts across grades and subjects.'}
+                  'Register an institution and provide the information required to explore institutional participation.'}
               </span>
             </div>
 
-            {/* ==============================================================
-                1. LEARNER ONLY REGISTRATION FORM
-                ============================================================== */}
+            {/* Learner registration */}
             {role === 'learner' && (
               <div className="space-y-4">
                 <div>
@@ -428,9 +400,10 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                       <div className="font-semibold text-xs text-[#1C1917]">
                         QUALANTRA Free
                       </div>
+
                       <div className="text-[11px] text-[#57534E] mt-0.5 leading-snug">
-                        Limited Ali, 1 Tutor, 1 Teacher Engagement/week, Core
-                        Study Material
+                        Limited Ali access, selected learning resources, and
+                        limited educator engagement.
                       </div>
                     </button>
 
@@ -449,8 +422,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                       </div>
 
                       <div className="text-[11px] text-[#57534E] mt-0.5 leading-snug">
-                        Expanded Ali, Expanded Teacher Engagement, Full
-                        Resource Ecosystem
+                        Expanded access to QUALANTRA learning and teaching
+                        resources.
                       </div>
                     </button>
                   </div>
@@ -464,7 +437,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Liam van der Merwe"
+                    placeholder="Enter your full legal name"
                     value={learnerName}
                     onChange={(e) => setLearnerName(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -479,7 +452,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="email"
                     required
-                    placeholder="liam.student@school.za"
+                    placeholder="Enter your email address"
                     value={learnerEmail}
                     onChange={(e) => setLearnerEmail(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -494,15 +467,15 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="tel"
                     required
-                    placeholder="+27825550192"
+                    placeholder="Enter your South African mobile number"
                     value={learnerPhone}
                     onChange={(e) => setLearnerPhone(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                   />
 
                   <p className="text-[10px] text-[#78716C] mt-1">
-                    Enter your South African number in international format,
-                    for example +27825550192.
+                    Use international format, for example +27 followed by
+                    your mobile number.
                   </p>
                 </div>
 
@@ -534,15 +507,17 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     </label>
 
                     <select
+                      required
                       value={learnerGrade}
                       onChange={(e) => setLearnerGrade(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                     >
+                      <option value="">Select your grade</option>
                       <option>Grade 8</option>
                       <option>Grade 9</option>
                       <option>Grade 10</option>
                       <option>Grade 11</option>
-                      <option>Grade 12 (Matric NSC/IEB)</option>
+                      <option>Grade 12</option>
                     </select>
                   </div>
 
@@ -552,10 +527,12 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     </label>
 
                     <select
+                      required
                       value={province}
                       onChange={(e) => setProvince(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                     >
+                      <option value="">Select your province</option>
                       <option>Gauteng</option>
                       <option>Western Cape</option>
                       <option>KwaZulu-Natal</option>
@@ -571,21 +548,23 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
                 <div>
                   <label className="block font-medium text-[#1C1917] mb-1">
-                    Primary Subject Pod Required *
+                    Primary Subject Interest *
                   </label>
 
                   <select
+                    required
                     value={learnerSubject}
                     onChange={(e) => setLearnerSubject(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                   >
-                    <option>
-                      Pure Mathematics & Physical Sciences
-                    </option>
-                    <option>Pure Mathematics Only (CAPS / IEB)</option>
-                    <option>Physical Sciences Only</option>
-                    <option>Life Sciences & English HL</option>
-                    <option>Accounting & Economics</option>
+                    <option value="">Select a subject</option>
+                    <option>Pure Mathematics</option>
+                    <option>Physical Sciences</option>
+                    <option>Life Sciences</option>
+                    <option>Accounting</option>
+                    <option>Economics</option>
+                    <option>English Home Language</option>
+                    <option>Information Technology</option>
                   </select>
                 </div>
 
@@ -595,30 +574,31 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   </label>
 
                   <select
+                    required
                     value={learnerLanguage}
                     onChange={(e) => setLearnerLanguage(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                   >
+                    <option value="">Select language support</option>
+                    <option>English</option>
                     <option>English & isiZulu</option>
                     <option>English & isiXhosa</option>
                     <option>English & Afrikaans</option>
                     <option>English & Sesotho</option>
                     <option>English & Sepedi</option>
-                    <option>English with SASL (Sign Language)</option>
+                    <option>English with SASL support</option>
                   </select>
                 </div>
               </div>
             )}
 
-            {/* ==============================================================
-                2. PARENT ONLY REGISTRATION FORM
-                ============================================================== */}
+            {/* Parent registration */}
             {role === 'parent' && (
               <div className="space-y-4">
-                <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-md text-[11px] text-amber-900">
-                  <strong>Parent Enrolment:</strong> You will have a dedicated
-                  parent portal to monitor your child's 1 teacher, 10 learners
-                  pod attendance, teacher notes, and exam readiness.
+                <div className="p-3 bg-[#FAF9F5] border border-[#E7E3DA] rounded-md text-[11px] text-[#57534E]">
+                  <strong>Parent / Guardian Registration:</strong> Provide
+                  your details and the learner information required for
+                  enrolment.
                 </div>
 
                 <div>
@@ -629,7 +609,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Pieter van der Merwe"
+                    placeholder="Enter your full legal name"
                     value={parentName}
                     onChange={(e) => setParentName(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -645,7 +625,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     <input
                       type="email"
                       required
-                      placeholder="pieter.vdm@domain.co.za"
+                      placeholder="Enter your email address"
                       value={parentEmail}
                       onChange={(e) => setParentEmail(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -660,7 +640,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     <input
                       type="tel"
                       required
-                      placeholder="+27 (0)82 555 0192"
+                      placeholder="Enter your South African mobile number"
                       value={parentPhone}
                       onChange={(e) => setParentPhone(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -686,7 +666,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
                 <div className="pt-2 border-t border-[#E7E3DA]">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-[#8C5E38] mb-3">
-                    Child / Learner Details to Enrol:
+                    Child / Learner Details
                   </div>
 
                   <div className="space-y-3">
@@ -698,7 +678,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                       <input
                         type="text"
                         required
-                        placeholder="e.g. Liam van der Merwe"
+                        placeholder="Enter the learner's full name"
                         value={childName}
                         onChange={(e) => setChildName(e.target.value)}
                         className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -712,15 +692,17 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         </label>
 
                         <select
+                          required
                           value={childGrade}
                           onChange={(e) => setChildGrade(e.target.value)}
                           className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                         >
+                          <option value="">Select grade</option>
                           <option>Grade 8</option>
                           <option>Grade 9</option>
                           <option>Grade 10</option>
                           <option>Grade 11</option>
-                          <option>Grade 12 (Matric NSC/IEB)</option>
+                          <option>Grade 12</option>
                         </select>
                       </div>
 
@@ -730,10 +712,12 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         </label>
 
                         <select
+                          required
                           value={province}
                           onChange={(e) => setProvince(e.target.value)}
                           className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                         >
+                          <option value="">Select province</option>
                           <option>Gauteng</option>
                           <option>Western Cape</option>
                           <option>KwaZulu-Natal</option>
@@ -749,7 +733,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
 
                     <div>
                       <label className="block font-medium text-[#1C1917] mb-1">
-                        Primary Academic Goal for Child *
+                        Primary Academic Goal
                       </label>
 
                       <select
@@ -757,18 +741,12 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                         onChange={(e) => setParentGoal(e.target.value)}
                         className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                       >
-                        <option>
-                          Matric Exam Preparation & Core Subject Mastery
-                        </option>
-                        <option>
-                          Remedial Pure Mathematics & Science Confidence
-                        </option>
-                        <option>
-                          Daily Structured Homework & Revision Pods
-                        </option>
-                        <option>
-                          IEB Advanced Programme Mathematics Extension
-                        </option>
+                        <option value="">Select an academic goal</option>
+                        <option>Matric examination preparation</option>
+                        <option>Subject mastery</option>
+                        <option>Homework and revision support</option>
+                        <option>Learning gap support</option>
+                        <option>General academic support</option>
                       </select>
                     </div>
                   </div>
@@ -776,9 +754,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            {/* ==============================================================
-                3. EDUCATOR APPLICATION FORM
-                ============================================================== */}
+            {/* Educator application */}
             {role === 'teacher' && (
               <div className="space-y-4">
                 <div>
@@ -789,7 +765,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Ms. Thandeka Dlamini"
+                    placeholder="Enter your full legal name"
                     value={teacherName}
                     onChange={(e) => setTeacherName(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -804,7 +780,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="email"
                     required
-                    placeholder="t.dlamini@domain.co.za"
+                    placeholder="Enter your email address"
                     value={teacherEmail}
                     onChange={(e) => setTeacherEmail(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -819,7 +795,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="tel"
                     required
-                    placeholder="+27825550192"
+                    placeholder="Enter your South African mobile number"
                     value={teacherPhone}
                     onChange={(e) => setTeacherPhone(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -851,7 +827,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. 10948291"
+                      placeholder="Enter your SACE registration number"
                       value={saceNumber}
                       onChange={(e) => setSaceNumber(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -864,10 +840,12 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     </label>
 
                     <select
+                      required
                       value={province}
                       onChange={(e) => setProvince(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                     >
+                      <option value="">Select your province</option>
                       <option>Gauteng</option>
                       <option>Western Cape</option>
                       <option>KwaZulu-Natal</option>
@@ -887,23 +865,25 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   </label>
 
                   <select
+                    required
                     value={teacherSubject}
                     onChange={(e) => setTeacherSubject(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                   >
-                    <option>Physical Sciences (Grades 10–12)</option>
-                    <option>Pure Mathematics (Grades 10–12)</option>
-                    <option>Life Sciences (Grades 10–12)</option>
-                    <option>Accounting (Grades 10–12)</option>
+                    <option value="">Select a subject</option>
+                    <option>Physical Sciences</option>
+                    <option>Pure Mathematics</option>
+                    <option>Life Sciences</option>
+                    <option>Accounting</option>
+                    <option>Economics</option>
                     <option>English Home Language</option>
+                    <option>Information Technology</option>
                   </select>
                 </div>
               </div>
             )}
 
-            {/* ==============================================================
-                4. SCHOOL / SPONSOR REGISTRATION FORM
-                ============================================================== */}
+            {/* School / institution registration */}
             {role === 'school' && (
               <div className="space-y-4">
                 <div>
@@ -914,7 +894,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Cape Academic High School"
+                    placeholder="Enter your institution or school name"
                     value={schoolName}
                     onChange={(e) => setSchoolName(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -930,7 +910,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Dr. H. Khumalo"
+                      placeholder="Enter administrator's full name"
                       value={adminName}
                       onChange={(e) => setAdminName(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -945,7 +925,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     <input
                       type="email"
                       required
-                      placeholder="admin@capeacademic.org.za"
+                      placeholder="Enter your institutional email address"
                       value={adminEmail}
                       onChange={(e) => setAdminEmail(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -961,7 +941,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   <input
                     type="tel"
                     required
-                    placeholder="+27825550192"
+                    placeholder="Enter your South African mobile number"
                     value={adminPhone}
                     onChange={(e) => setAdminPhone(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
@@ -987,18 +967,21 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-medium text-[#1C1917] mb-1">
-                      Cohort Size *
+                      Intended Learner Capacity *
                     </label>
 
                     <select
+                      required
                       value={cohortSize}
                       onChange={(e) => setCohortSize(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                     >
-                      <option>20 Learners (2 Pods)</option>
-                      <option>40 Learners (4 Pods)</option>
-                      <option>100 Learners (10 Pods)</option>
-                      <option>250+ Learners (Full Grade Enrolment)</option>
+                      <option value="">Select capacity</option>
+                      <option>Up to 20 learners</option>
+                      <option>21–40 learners</option>
+                      <option>41–100 learners</option>
+                      <option>101–250 learners</option>
+                      <option>More than 250 learners</option>
                     </select>
                   </div>
 
@@ -1008,12 +991,14 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                     </label>
 
                     <select
+                      required
                       value={province}
                       onChange={(e) => setProvince(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-md border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
                     >
-                      <option>Western Cape</option>
+                      <option value="">Select your province</option>
                       <option>Gauteng</option>
+                      <option>Western Cape</option>
                       <option>KwaZulu-Natal</option>
                       <option>Eastern Cape</option>
                       <option>Free State</option>
@@ -1027,23 +1012,22 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            {/* Error message */}
             {errorMessage && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-md text-[11px] text-red-800">
                 {errorMessage}
               </div>
             )}
 
-            {/* SACE & POPIA compliance guarantee */}
             <div className="pt-2 flex items-center gap-2 text-[11px] text-[#78716C]">
               <ShieldCheck className="w-3.5 h-3.5 text-[#8C5E38] shrink-0" />
+
               <span>
-                Complies with South African POPIA privacy regulations and SACE
-                teaching guidelines.
+                QUALANTRA is designed to handle user information with
+                appropriate privacy, security, and professional verification
+                processes.
               </span>
             </div>
 
-            {/* Submit CTA */}
             <div className="pt-2">
               <button
                 type="submit"
@@ -1055,7 +1039,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({ onNavigate }) => {
                   : role === 'learner'
                     ? 'Create Learner Account'
                     : role === 'parent'
-                      ? 'Register as Parent & Enrol Child'
+                      ? 'Register as Parent & Enrol Learner'
                       : role === 'teacher'
                         ? 'Create Educator Account'
                         : 'Create Institutional Account'}

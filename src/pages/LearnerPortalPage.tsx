@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { AppRoute, LearnerPlan, LearningResourceItem } from '../types';
-import {
-  MOCK_LEARNER_SCHEDULE,
-  MOCK_LEARNER_PROFILE,
-} from '../data/mockPortalData';
 import { SA_LANGUAGES } from '../data/languagesData';
 import {
-  Clock,
-  BookOpen,
-  User,
   CheckCircle2,
   ArrowLeft,
   Globe,
@@ -21,6 +14,8 @@ import {
   Lock,
   ArrowRight,
   ChevronRight,
+  BookOpen,
+  User,
 } from 'lucide-react';
 import {
   PLAN_ENTITLEMENTS,
@@ -45,10 +40,10 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
   onNavigate,
 }) => {
   // ---------------------------------------------------------
-  // Plan state
+  // Account / plan state
   // ---------------------------------------------------------
-  const [currentPlan, setCurrentPlan] =
-    useState<LearnerPlan>('FREE');
+
+  const [currentPlan] = useState<LearnerPlan>('FREE');
 
   const [selectedLanguage, setSelectedLanguage] =
     useState<string>('en');
@@ -60,6 +55,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
   // ---------------------------------------------------------
   // Resource viewer state
   // ---------------------------------------------------------
+
   const [selectedResource, setSelectedResource] =
     useState<LearningResourceItem | null>(null);
 
@@ -71,7 +67,12 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
   // ---------------------------------------------------------
   // Ali state
+  //
+  // IMPORTANT:
+  // Ali remains connected to the real AWS backend.
+  // No fictional conversation is preloaded.
   // ---------------------------------------------------------
+
   const [aliQueryInput, setAliQueryInput] =
     useState<string>('');
 
@@ -79,42 +80,18 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
     useState<boolean>(false);
 
   const [aliConversation, setAliConversation] =
-    useState<AliMessage[]>([
-      {
-        role: 'learner',
-        text:
-          'Ali, what is the key difference between an elastic collision and an inelastic collision?',
-        time: '10:14',
-      },
-      {
-        role: 'ali',
-        text:
-          'In an elastic collision, total kinetic energy is conserved. In an inelastic collision, some kinetic energy is converted into other forms, such as internal heat or deformation, while linear momentum is conserved in both.',
-        time: '10:14',
-      },
-    ]);
-
-  // ---------------------------------------------------------
-  // Practice completion state
-  // ---------------------------------------------------------
-  const [practiceCompleted, setPracticeCompleted] =
-    useState<boolean>(false);
-
-  // ---------------------------------------------------------
-  // Teacher engagement state
-  // ---------------------------------------------------------
-  const [bookingSuccess, setBookingSuccess] =
-    useState<boolean>(false);
+    useState<AliMessage[]>([]);
 
   // ---------------------------------------------------------
   // Plan configuration
   // ---------------------------------------------------------
+
   const entitlements = PLAN_ENTITLEMENTS[currentPlan];
-  const isPremium = currentPlan === 'PREMIUM';
 
   // ---------------------------------------------------------
   // Resource handler
   // ---------------------------------------------------------
+
   const handleResourceClick = (
     resource: LearningResourceItem
   ) => {
@@ -128,10 +105,8 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
   // ---------------------------------------------------------
   // Get Cognito access token
-  //
-  // The frontend stores the Cognito token after login.
-  // We check the common Cognito storage locations.
   // ---------------------------------------------------------
+
   const getCognitoToken = (): string | null => {
     const keys = Object.keys(localStorage);
 
@@ -149,7 +124,6 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
       }
     }
 
-    // Also check sessionStorage.
     const sessionKeys = Object.keys(sessionStorage);
 
     const sessionCognitoKey = sessionKeys.find(
@@ -172,6 +146,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
   // ---------------------------------------------------------
   // Send question to real Ali backend
   // ---------------------------------------------------------
+
   const handleSendAliMessage = async (
     e: React.FormEvent
   ) => {
@@ -202,9 +177,6 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
     setAliLoading(true);
 
     try {
-      // -------------------------------------------------------
-      // Get authenticated Cognito access token
-      // -------------------------------------------------------
       const token = getCognitoToken();
 
       if (!token) {
@@ -213,9 +185,6 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
         );
       }
 
-      // -------------------------------------------------------
-      // Call AWS API Gateway
-      // -------------------------------------------------------
       const response = await fetch(
         `${API_BASE_URL}/ali`,
         {
@@ -230,9 +199,6 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
         }
       );
 
-      // -------------------------------------------------------
-      // Parse API response
-      // -------------------------------------------------------
       const data = await response.json();
 
       if (!response.ok) {
@@ -242,9 +208,6 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
         );
       }
 
-      // -------------------------------------------------------
-      // Add real Ali response to conversation
-      // -------------------------------------------------------
       const aliReply: AliMessage = {
         role: 'ali',
         text:
@@ -291,7 +254,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* ===================================================== */}
-        {/* NAVIGATION & PLAN SWITCHER                           */}
+        {/* NAVIGATION                                            */}
         {/* ===================================================== */}
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E7E3DA] pb-4">
@@ -304,36 +267,10 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             <span>Return to QUALANTRA Home</span>
           </button>
 
-          <div className="flex items-center gap-2 bg-[#F5F3ED] border border-[#E7E3DA] p-1 rounded-lg">
-
-            <span className="text-[11px] font-medium text-[#78716C] px-2 hidden md:inline">
-              Prototype Plan View:
-            </span>
-
-            <button
-              onClick={() => setCurrentPlan('FREE')}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all cursor-pointer ${
-                currentPlan === 'FREE'
-                  ? 'bg-white text-[#1C1917] shadow-2xs border border-[#D6D3CD]'
-                  : 'text-[#78716C] hover:text-[#1C1917]'
-              }`}
-            >
-              QUALANTRA Free
-            </button>
-
-            <button
-              onClick={() => setCurrentPlan('PREMIUM')}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
-                currentPlan === 'PREMIUM'
-                  ? 'bg-[#1C1917] text-white shadow-2xs'
-                  : 'text-[#78716C] hover:text-[#1C1917]'
-              }`}
-            >
-              <Sparkles className="w-3 h-3 text-[#E7A868]" />
-              <span>QUALANTRA Premium</span>
-            </button>
-
+          <div className="text-xs text-[#78716C] font-mono">
+            Learner Workspace
           </div>
+
         </div>
 
         {/* ===================================================== */}
@@ -345,7 +282,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
           <div className="flex items-start sm:items-center gap-4">
 
             <div className="w-14 h-14 rounded-full bg-[#FAF9F5] border border-[#D6D3CD] flex items-center justify-center font-serif text-xl font-bold text-[#1C1917] shrink-0">
-              LM
+              L
             </div>
 
             <div>
@@ -358,29 +295,20 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
                 <span className="text-[#D6D3CD]">·</span>
 
-                <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded border ${
-                    isPremium
-                      ? 'bg-[#1C1917] text-white border-[#1C1917]'
-                      : 'bg-[#F5F3ED] text-[#1C1917] border-[#D6D3CD]'
-                  }`}
-                >
+                <span className="text-xs font-semibold px-2 py-0.5 rounded border bg-[#F5F3ED] text-[#1C1917] border-[#D6D3CD]">
                   {entitlements.name}
                 </span>
 
               </div>
 
               <h1 className="text-2xl sm:text-3xl font-serif text-[#1C1917]">
-                {MOCK_LEARNER_PROFILE.name}
+                Welcome, Learner
               </h1>
 
               <div className="flex flex-wrap items-center gap-2 text-xs text-[#57534E] mt-1">
-                <span>{MOCK_LEARNER_PROFILE.grade}</span>
-                <span aria-hidden="true">·</span>
-                <span>{MOCK_LEARNER_PROFILE.schoolRegion}</span>
-                <span aria-hidden="true">·</span>
                 <span>
-                  CAPS Physical Sciences & Mathematics Cohort
+                  Your learner profile and academic information will appear
+                  here after your account is connected.
                 </span>
               </div>
 
@@ -394,7 +322,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
               <Globe className="w-4 h-4 text-[#8C5E38]" />
 
               <span className="text-[#57534E]">
-                Bilingual:
+                Language:
               </span>
 
               <select
@@ -416,31 +344,24 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
             </div>
 
-            {!isPremium ? (
-              <button
-                onClick={() => {
-                  setUpgradeTriggerReason(
-                    'QUALANTRA Premium Experience'
-                  );
-                  setShowUpgradeModal(true);
-                }}
-                className="px-3.5 py-1.5 bg-[#FAF9F5] hover:bg-[#F5F3ED] border border-[#D6D3CD] text-[#1C1917] text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#8C5E38]" />
-                <span>Explore Premium</span>
-              </button>
-            ) : (
-              <div className="px-3 py-1.5 bg-[#F5F3ED] border border-[#E7E3DA] text-[#8C5E38] text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Full Access Active</span>
-              </div>
-            )}
+            <button
+              onClick={() => {
+                setUpgradeTriggerReason(
+                  'QUALANTRA Premium'
+                );
+                setShowUpgradeModal(true);
+              }}
+              className="px-3.5 py-1.5 bg-[#FAF9F5] hover:bg-[#F5F3ED] border border-[#D6D3CD] text-[#1C1917] text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#8C5E38]" />
+              <span>Explore Premium</span>
+            </button>
 
           </div>
         </div>
 
         {/* ===================================================== */}
-        {/* PLAN STATUS                                          */}
+        {/* PLAN INFORMATION                                     */}
         {/* ===================================================== */}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
@@ -456,9 +377,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             </div>
 
             <div className="text-[11px] text-[#57534E] leading-tight">
-              {isPremium
-                ? 'Expanded deep queries'
-                : 'Daily study queries'}
+              {entitlements.ali.usageNote}
             </div>
           </div>
 
@@ -473,7 +392,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             </div>
 
             <div className="text-[11px] text-[#57534E] leading-tight">
-              {entitlements.tutor.assignedTutorName.split('&')[0]}
+              Teacher assignment available through the learner account.
             </div>
           </div>
 
@@ -484,13 +403,11 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             </div>
 
             <div className="font-semibold text-sm text-[#1C1917]">
-              {isPremium
-                ? 'Expanded access'
-                : '1 remaining this week'}
+              {entitlements.teacherEngagement.label}
             </div>
 
             <div className="text-[11px] text-[#57534E] leading-tight">
-              Direct qualified educator
+              Available through your learner account.
             </div>
           </div>
 
@@ -501,15 +418,11 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             </div>
 
             <div className="font-semibold text-sm text-[#1C1917]">
-              {isPremium
-                ? 'Full access'
-                : 'Curated core access'}
+              {entitlements.resources.label}
             </div>
 
             <div className="text-[11px] text-[#57534E] leading-tight">
-              {isPremium
-                ? 'Full curriculum library'
-                : 'Selected core library'}
+              Curriculum learning materials.
             </div>
           </div>
 
@@ -520,15 +433,11 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             </div>
 
             <div className="font-semibold text-sm text-[#1C1917]">
-              {isPremium
-                ? 'Expanded access'
-                : 'Available'}
+              Available
             </div>
 
             <div className="text-[11px] text-[#57534E] leading-tight">
-              {isPremium
-                ? 'Comprehensive notes'
-                : 'Core CAPS definitions'}
+              Curriculum-aligned study support.
             </div>
           </div>
 
@@ -539,11 +448,11 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             </div>
 
             <div className="font-semibold text-sm text-[#1C1917]">
-              Included
+              In development
             </div>
 
             <div className="text-[11px] text-[#57534E] leading-tight">
-              SASL visual language
+              SASL accessibility initiative.
             </div>
           </div>
 
@@ -563,7 +472,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 : 'text-[#78716C] hover:text-[#1C1917]'
             }`}
           >
-            Today's Schedule & Pod
+            Learning Overview
           </button>
 
           <button
@@ -574,7 +483,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 : 'text-[#78716C] hover:text-[#1C1917]'
             }`}
           >
-            Learning Resources & Material
+            Learning Resources
           </button>
 
           <button
@@ -597,7 +506,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 : 'text-[#78716C] hover:text-[#1C1917]'
             }`}
           >
-            Teacher Engagement & Tutor
+            Teacher Engagement
           </button>
 
         </div>
@@ -616,87 +525,22 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 <div className="flex items-center justify-between border-b border-[#E7E3DA] pb-3">
 
                   <div className="font-semibold text-sm text-[#1C1917]">
-                    Today’s Synchronous Classes (Pod Alpha)
-                  </div>
-
-                  <div className="text-xs text-[#78716C]">
-                    Term 3 · Week 6
+                    Learning Schedule
                   </div>
 
                 </div>
 
-                <div className="space-y-3">
+                <div className="p-6 rounded-lg border border-dashed border-[#D6D3CD] bg-[#FAF9F5] text-center">
 
-                  {MOCK_LEARNER_SCHEDULE.map(
-                    (item, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-4 rounded-lg border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                          item.status === 'Live Now'
-                            ? 'border-[#1C1917] bg-[#FAF9F5] ring-1 ring-[#1C1917]'
-                            : 'border-[#E7E3DA] bg-white'
-                        }`}
-                      >
+                  <div className="text-sm font-semibold text-[#1C1917] mb-2">
+                    No learning schedule is currently connected.
+                  </div>
 
-                        <div className="space-y-1">
-
-                          <div className="font-mono text-xs text-[#78716C]">
-                            {item.time}
-                          </div>
-
-                          <div className="font-semibold text-sm text-[#1C1917]">
-                            {item.subject}
-                          </div>
-
-                          <div className="text-xs text-[#57534E]">
-                            {item.topic}
-                          </div>
-
-                          <div className="text-xs text-[#78716C] flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            {item.educator}
-                          </div>
-
-                        </div>
-
-                        <div>
-
-                          {item.status === 'Live Now' ? (
-                            <button
-                              onClick={() => {
-                                const el =
-                                  document.getElementById(
-                                    'classroom'
-                                  );
-
-                                if (el) {
-                                  el.scrollIntoView({
-                                    behavior: 'smooth',
-                                  });
-                                } else {
-                                  onNavigate('/');
-                                }
-                              }}
-                              className="px-3.5 py-1.5 bg-[#1C1917] text-white rounded text-xs font-semibold hover:bg-black transition-colors cursor-pointer whitespace-nowrap shadow-2xs"
-                            >
-                              Join Live Classroom (10 / 10)
-                            </button>
-                          ) : item.status === 'Completed' ? (
-                            <span className="text-xs text-[#57534E] flex items-center gap-1">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-[#8C5E38]" />
-                              Notes Synced
-                            </span>
-                          ) : (
-                            <span className="text-xs text-[#78716C] px-2.5 py-1 border border-[#E7E3DA] rounded">
-                              Scheduled
-                            </span>
-                          )}
-
-                        </div>
-
-                      </div>
-                    )
-                  )}
+                  <p className="text-xs text-[#57534E] leading-relaxed max-w-md mx-auto">
+                    Once your learner profile is connected to QUALANTRA,
+                    your classes, subjects, educators, timetable, and live
+                    classroom sessions will appear here.
+                  </p>
 
                 </div>
 
@@ -705,31 +549,19 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
               <div className="bg-white border border-[#E7E3DA] rounded-lg p-6 shadow-2xs space-y-4">
 
                 <div className="font-semibold text-sm text-[#1C1917] border-b border-[#E7E3DA] pb-3">
-                  Current Subject Registrations (Grade 11)
+                  Subject Registrations
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-6 rounded-lg border border-dashed border-[#D6D3CD] bg-[#FAF9F5] text-center">
 
-                  {MOCK_LEARNER_PROFILE.subjects.map(
-                    (s, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 rounded border border-[#E7E3DA] bg-[#FAF9F5]"
-                      >
-                        <div className="font-semibold text-[#1C1917]">
-                          {s.name}
-                        </div>
+                  <div className="text-sm font-semibold text-[#1C1917] mb-2">
+                    No subjects are currently linked to this account.
+                  </div>
 
-                        <div className="text-[#57534E] mt-0.5">
-                          {s.educator}
-                        </div>
-
-                        <div className="text-[11px] text-[#8C5E38] font-mono mt-1">
-                          {s.status}
-                        </div>
-                      </div>
-                    )
-                  )}
+                  <p className="text-xs text-[#57534E] leading-relaxed max-w-md mx-auto">
+                    Your registered subjects and educator assignments will
+                    appear here after your learner profile is completed.
+                  </p>
 
                 </div>
 
@@ -744,128 +576,44 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 <div className="flex items-center justify-between border-b border-[#E7E3DA] pb-3">
 
                   <div className="font-semibold text-sm text-[#1C1917]">
-                    Teacher Diagnostic Gaps
+                    Learning Support
                   </div>
-
-                  <span className="text-xs text-[#8C5E38] font-medium">
-                    Assigned by Educator
-                  </span>
 
                 </div>
 
-                <div className="space-y-4 text-xs">
+                <div className="p-6 rounded-lg border border-dashed border-[#D6D3CD] bg-[#FAF9F5] text-center">
 
-                  {MOCK_LEARNER_PROFILE.supportGaps.map(
-                    (gap, idx) => (
-                      <div
-                        key={idx}
-                        className="p-4 rounded border border-[#E7E3DA] bg-[#FAF9F5] space-y-2"
-                      >
-
-                        <div className="flex items-center justify-between">
-
-                          <span className="font-semibold text-[#1C1917]">
-                            {gap.topic}
-                          </span>
-
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white border border-[#D6D3CD] text-[#8C5E38]">
-                            {gap.status}
-                          </span>
-
-                        </div>
-
-                        <p className="text-[#57534E] leading-relaxed">
-                          {gap.note}
-                        </p>
-
-                      </div>
-                    )
-                  )}
-
-                </div>
-
-                <div className="mt-4 p-4 rounded-lg bg-[#FAF9F5] border border-[#1C1917] space-y-3 text-xs">
-
-                  <div className="font-semibold text-[#1C1917] flex items-center justify-between">
-
-                    <span>
-                      Interactive Practice Drill #1
-                    </span>
-
-                    <span className="font-mono text-[#78716C]">
-                      Time: 5 min
-                    </span>
-
+                  <div className="text-sm font-semibold text-[#1C1917] mb-2">
+                    No learning gaps have been recorded.
                   </div>
 
-                  <p className="text-[#44403C]">
-                    "Calculate the rebound velocity of a
-                    0.5 kg ball moving at 6 m/s East after
-                    impacting a rigid wall with an impulse
-                    of 5 N·s West."
+                  <p className="text-xs text-[#57534E] leading-relaxed max-w-md mx-auto">
+                    Assessment results and educator recommendations will
+                    appear here when they are recorded through QUALANTRA.
                   </p>
-
-                  {practiceCompleted ? (
-                    <div className="p-3 bg-white rounded border border-[#8C5E38]/40 text-xs text-[#1C1917] flex items-center gap-2">
-
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-
-                      <span>
-                        Correct. Solution: v_final = -4 m/s
-                        (4 m/s West). Verified by Ali.
-                      </span>
-
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() =>
-                        setPracticeCompleted(true)
-                      }
-                      className="w-full py-2 bg-[#1C1917] text-white rounded font-medium hover:bg-black transition-colors cursor-pointer text-center"
-                    >
-                      Submit Worked Answer for Verification
-                    </button>
-                  )}
 
                 </div>
 
               </div>
 
-              {!isPremium && (
-                <div className="p-5 rounded-lg bg-[#F5F3ED] border border-[#E7E3DA] space-y-2 text-xs">
+              <div className="p-5 rounded-lg bg-[#F5F3ED] border border-[#E7E3DA] space-y-2 text-xs">
 
-                  <div className="font-semibold text-[#1C1917] flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-[#8C5E38]" />
-                    <span>Need more teacher support?</span>
-                  </div>
-
-                  <p className="text-[#57534E] leading-relaxed">
-                    QUALANTRA Premium provides expanded
-                    teacher engagement, additional
-                    diagnostic practice, and in-depth
-                    exam preparation materials.
-                  </p>
-
-                  <button
-                    onClick={() => {
-                      setUpgradeTriggerReason(
-                        'Expanded Teacher Support'
-                      );
-                      setShowUpgradeModal(true);
-                    }}
-                    className="text-xs font-semibold text-[#8C5E38] hover:text-[#1C1917] transition-colors cursor-pointer inline-flex items-center gap-1 pt-1"
-                  >
-                    <span>
-                      Learn about expanded access
-                    </span>
-
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-
+                <div className="font-semibold text-[#1C1917] flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-[#8C5E38]" />
+                  <span>Learning Support Loop</span>
                 </div>
-              )}
+
+                <p className="text-[#57534E] leading-relaxed">
+                  QUALANTRA can connect assessment, learning support,
+                  educator guidance, AI assistance, and reassessment.
+                  Your actual learning information will be shown once it is
+                  recorded in the platform.
+                </p>
+
+              </div>
 
             </div>
+
           </div>
         )}
 
@@ -887,9 +635,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                   </h3>
 
                   <p className="text-xs text-[#57534E] mt-0.5">
-                    {isPremium
-                      ? 'Full Resource Ecosystem: 140 curriculum-aligned resources available'
-                      : 'Curated Core Library: 18 essential study resources available on QUALANTRA Free'}
+                    Learning materials available through QUALANTRA.
                   </p>
 
                 </div>
@@ -897,7 +643,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 <div className="flex items-center gap-2 text-xs">
 
                   <span className="text-[#78716C]">
-                    Current Plan Access:
+                    Current Plan:
                   </span>
 
                   <span className="font-semibold text-[#1C1917] px-2.5 py-1 rounded bg-[#F5F3ED] border border-[#E7E3DA]">
@@ -948,7 +694,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                               </span>
                             ) : (
                               <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#EAE7E0] text-[#1C1917]">
-                                Core Free
+                                Core
                               </span>
                             )}
 
@@ -974,7 +720,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                           <span className="font-medium text-[#1C1917] inline-flex items-center gap-1">
                             {hasAccess
                               ? 'Open Material'
-                              : 'Requires Premium'}
+                              : 'Premium Access Required'}
 
                             <ChevronRight className="w-3 h-3" />
                           </span>
@@ -988,33 +734,22 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
               </div>
 
-              {!isPremium && (
-                <div className="mt-6 p-4 rounded-lg bg-[#FAF9F5] border border-[#E7E3DA] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-[#57534E]">
+              {SAMPLE_LEARNING_RESOURCES.length === 0 && (
+                <div className="p-6 rounded-lg border border-dashed border-[#D6D3CD] bg-[#FAF9F5] text-center">
 
-                  <div>
-                    <strong className="text-[#1C1917]">
-                      Explore more learning resources:{' '}
-                    </strong>
-                    QUALANTRA Premium opens the broader
-                    resource library, step-by-step exam
-                    archives, and interactive diagnostic
-                    drills.
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setUpgradeTriggerReason(
-                        'Broader Resource Library'
-                      );
-                      setShowUpgradeModal(true);
-                    }}
-                    className="px-3.5 py-1.5 bg-[#1C1917] text-white rounded text-xs font-semibold hover:bg-black transition-colors cursor-pointer whitespace-nowrap shrink-0"
-                  >
-                    View Premium Access
-                  </button>
+                  <p className="text-xs text-[#57534E]">
+                    Curriculum resources will appear here when they are
+                    connected to the QUALANTRA knowledge library.
+                  </p>
 
                 </div>
               )}
+
+              <div className="mt-6 p-4 rounded-lg bg-[#FAF9F5] border border-[#E7E3DA] text-xs text-[#57534E]">
+                Resources displayed in this workspace should be sourced from
+                QUALANTRA's curriculum and knowledge systems. Access depends
+                on the learner's account and plan.
+              </div>
 
             </div>
           </div>
@@ -1044,8 +779,8 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 </div>
 
                 <p className="text-xs text-[#57534E] mt-1">
-                  Ali supports the teacher and learner.
-                  Ali does not replace the teacher.
+                  Ali supports learning and teaching. Ali does not replace
+                  the teacher.
                 </p>
 
               </div>
@@ -1053,16 +788,10 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
               <div className="flex items-center gap-2 text-xs">
 
                 <span className="text-[#78716C]">
-                  Ali Access Level:
+                  Ali Access:
                 </span>
 
-                <span
-                  className={`font-semibold px-2.5 py-1 rounded border ${
-                    isPremium
-                      ? 'bg-[#1C1917] text-white border-[#1C1917]'
-                      : 'bg-[#F5F3ED] text-[#1C1917] border-[#D6D3CD]'
-                  }`}
-                >
+                <span className="font-semibold px-2.5 py-1 rounded border bg-[#F5F3ED] text-[#1C1917] border-[#D6D3CD]">
                   {entitlements.ali.label}
                 </span>
 
@@ -1070,7 +799,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
             </div>
 
-            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E7E3DA] text-xs text-[#57534E] flex items-center justify-between">
+            <div className="p-3.5 rounded-lg bg-[#FAF9F5] border border-[#E7E3DA] text-xs text-[#57534E] flex items-center justify-between gap-4">
 
               <div>
                 <strong className="text-[#1C1917]">
@@ -1079,17 +808,39 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 {entitlements.ali.usageNote}
               </div>
 
-              <span className="text-[11px] font-mono text-[#8C5E38]">
-                {isPremium
-                  ? 'Expanded Capacity'
-                  : 'Standard Daily Allowance'}
+              <span className="text-[11px] font-mono text-[#8C5E38] whitespace-nowrap">
+                AWS Connected
               </span>
 
             </div>
 
             {/* Conversation Window */}
 
-            <div className="border border-[#E7E3DA] rounded-lg bg-[#FAF9F5] p-4 space-y-4 max-h-[360px] overflow-y-auto text-xs">
+            <div className="border border-[#E7E3DA] rounded-lg bg-[#FAF9F5] p-4 space-y-4 min-h-[260px] max-h-[360px] overflow-y-auto text-xs">
+
+              {aliConversation.length === 0 && !aliLoading && (
+                <div className="min-h-[220px] flex items-center justify-center text-center">
+
+                  <div className="max-w-md">
+
+                    <div className="w-10 h-10 rounded-full bg-[#1C1917] text-white flex items-center justify-center mx-auto mb-3 font-serif font-bold">
+                      A
+                    </div>
+
+                    <div className="font-semibold text-[#1C1917] mb-2">
+                      Ask Ali a learning question
+                    </div>
+
+                    <p className="text-[#57534E] leading-relaxed">
+                      Ask a question about a QUALANTRA learning topic.
+                      Ali will use the authenticated AWS-backed learning
+                      service to respond.
+                    </p>
+
+                  </div>
+
+                </div>
+              )}
 
               {aliConversation.map((msg, idx) => (
 
@@ -1181,32 +932,29 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
             </form>
 
-            {!isPremium && (
-              <div className="pt-2 text-xs text-[#57534E] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-t border-[#E7E3DA]">
+            <div className="pt-2 text-xs text-[#57534E] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-t border-[#E7E3DA]">
 
-                <div>
-                  <strong className="text-[#1C1917]">
-                    Unlock more from Ali:{' '}
-                  </strong>
-                  Get expanded AI assistance for deeper
-                  study support, tiered practice problem
-                  generation, and assessment preparation.
-                </div>
-
-                <button
-                  onClick={() => {
-                    setUpgradeTriggerReason(
-                      'Deeper Ali Study Support'
-                    );
-                    setShowUpgradeModal(true);
-                  }}
-                  className="font-semibold text-[#8C5E38] hover:text-[#1C1917] transition-colors cursor-pointer whitespace-nowrap"
-                >
-                  View Premium Ali Capabilities
-                </button>
-
+              <div>
+                <strong className="text-[#1C1917]">
+                  Need expanded support?{' '}
+                </strong>
+                QUALANTRA Premium is designed to provide additional learning
+                resources and support.
               </div>
-            )}
+
+              <button
+                onClick={() => {
+                  setUpgradeTriggerReason(
+                    'Expanded Ali Study Support'
+                  );
+                  setShowUpgradeModal(true);
+                }}
+                className="font-semibold text-[#8C5E38] hover:text-[#1C1917] transition-colors cursor-pointer whitespace-nowrap"
+              >
+                View Premium
+              </button>
+
+            </div>
 
           </div>
         )}
@@ -1229,8 +977,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                   </h3>
 
                   <p className="text-xs text-[#57534E]">
-                    Direct engagement with an accredited
-                    subject educator
+                    Direct engagement with a qualified subject educator.
                   </p>
 
                 </div>
@@ -1244,12 +991,10 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
               <div className="space-y-3 text-xs text-[#44403C] leading-relaxed">
 
                 <p>
-                  Teacher engagement is direct, focused
-                  interaction with a qualified subject
-                  teacher. You can use your engagement
-                  allowance to ask for help, discuss a
-                  challenging problem, receive personal
-                  guidance, or review a past assessment.
+                  Teacher engagement is intended for focused interaction
+                  with a qualified educator. Learners can use this space to
+                  request guidance, discuss challenging work, or receive
+                  subject support.
                 </p>
 
                 <div className="p-4 rounded-lg bg-[#FAF9F5] border border-[#E7E3DA] space-y-2">
@@ -1257,57 +1002,34 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                   <div className="flex items-center justify-between">
 
                     <span className="font-semibold text-[#1C1917]">
-                      Weekly Engagement Allowance:
+                      Engagement availability:
                     </span>
 
                     <span className="font-bold text-[#8C5E38]">
-                      {
-                        entitlements.teacherEngagement
-                          .remainingThisWeek
-                      }{' '}
-                      available this week
+                      {entitlements.teacherEngagement.label}
                     </span>
 
                   </div>
 
                   <div className="text-[11px] text-[#78716C]">
-                    Lead Educator: Ms. Thandeka Dlamini
-                    (Physical Sciences)
+                    Your educator assignment will appear here when one is
+                    connected to your learner account.
                   </div>
 
                 </div>
 
-                {bookingSuccess ? (
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg flex items-center gap-2">
-
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-
-                    <span>
-                      Your engagement request has been
-                      submitted to Ms. Dlamini.
-                    </span>
-
-                  </div>
-                ) : (
-                  <button
-                    onClick={() =>
-                      setBookingSuccess(true)
-                    }
-                    className="w-full py-2.5 bg-[#1C1917] text-white rounded-md text-xs font-semibold hover:bg-black transition-colors cursor-pointer text-center"
-                  >
-                    Request Guidance Session for this Week
-                  </button>
-                )}
+                <button
+                  onClick={() =>
+                    setUpgradeTriggerReason(
+                      'Teacher Engagement'
+                    ) || setShowUpgradeModal(true)
+                  }
+                  className="w-full py-2.5 bg-[#1C1917] text-white rounded-md text-xs font-semibold hover:bg-black transition-colors cursor-pointer text-center"
+                >
+                  View Teacher Support Options
+                </button>
 
               </div>
-
-              {!isPremium && (
-                <div className="pt-3 border-t border-[#E7E3DA] text-xs text-[#78716C]">
-                  Need more educator time? QUALANTRA
-                  Premium provides expanded teacher
-                  engagement across all your subjects.
-                </div>
-              )}
 
             </div>
 
@@ -1318,12 +1040,11 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 <div>
 
                   <h3 className="font-serif text-lg text-[#1C1917]">
-                    Your Tutor
+                    Tutor
                   </h3>
 
                   <p className="text-xs text-[#57534E]">
-                    Ongoing learning guidance and study
-                    check-ins
+                    Learning guidance and study support.
                   </p>
 
                 </div>
@@ -1334,51 +1055,16 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
               </div>
 
-              <div className="p-4 rounded-lg bg-[#FAF9F5] border border-[#E7E3DA] space-y-3 text-xs">
+              <div className="p-6 rounded-lg border border-dashed border-[#D6D3CD] bg-[#FAF9F5] text-center">
 
-                <div className="flex items-center gap-3">
-
-                  <div className="w-10 h-10 rounded-full bg-white border border-[#D6D3CD] flex items-center justify-center font-serif text-sm font-semibold text-[#1C1917]">
-                    DS
-                  </div>
-
-                  <div>
-
-                    <div className="font-semibold text-[#1C1917]">
-                      {entitlements.tutor.assignedTutorName}
-                    </div>
-
-                    <div className="text-[11px] text-[#78716C]">
-                      {entitlements.tutor.assignedTutorSubject}
-                    </div>
-
-                  </div>
-
+                <div className="text-sm font-semibold text-[#1C1917] mb-2">
+                  No tutor is currently assigned.
                 </div>
 
-                <p className="text-[#57534E] leading-relaxed pt-1">
-                  {entitlements.tutor.description}
+                <p className="text-xs text-[#57534E] leading-relaxed max-w-md mx-auto">
+                  A tutor assignment and related check-ins will appear here
+                  when they are connected to your learner account.
                 </p>
-
-              </div>
-
-              <div className="space-y-2 text-xs text-[#44403C]">
-
-                <div className="font-semibold text-[#1C1917]">
-                  Next Tutor Check-in:
-                </div>
-
-                <div className="p-3 rounded border border-[#E7E3DA] bg-white flex items-center justify-between">
-
-                  <span>
-                    Friday, 15:30 · Weekly Homework Review
-                  </span>
-
-                  <span className="text-[10px] font-mono text-[#8C5E38]">
-                    Confirmed
-                  </span>
-
-                </div>
 
               </div>
 
@@ -1433,26 +1119,14 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
               <div className="p-4 bg-[#FAF9F5] rounded-lg border border-[#E7E3DA] font-mono text-xs text-[#1C1917] space-y-2">
 
                 <div className="font-semibold">
-                  Core Curriculum Key Takeaways:
+                  Learning Support
                 </div>
 
-                <ul className="list-disc pl-5 space-y-1 text-[#57534E]">
-
-                  <li>
-                    Linear momentum: p = m · v
-                    (measured in kg·m·s⁻¹).
-                  </li>
-
-                  <li>
-                    Impulse theorem: J = F_net · Δt = Δp.
-                  </li>
-
-                  <li>
-                    Isolated system conservation:
-                    Σp_initial = Σp_final.
-                  </li>
-
-                </ul>
+                <p className="text-[#57534E]">
+                  This material is presented as curriculum learning support.
+                  Additional curriculum content can be connected through
+                  the QUALANTRA knowledge system.
+                </p>
 
               </div>
 
@@ -1498,8 +1172,7 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                 </div>
 
                 <h3 className="font-serif text-2xl text-[#1C1917]">
-                  This resource is available with
-                  QUALANTRA Premium.
+                  {upgradeTriggerReason || 'Premium Access'}
                 </h3>
 
               </div>
@@ -1518,15 +1191,15 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
             <div className="space-y-4 text-xs sm:text-sm text-[#44403C] leading-relaxed">
 
               <p>
-                Upgrade to access expanded learning
-                resources, deeper Ali support and
-                additional educational assistance.
+                QUALANTRA Premium is designed to provide expanded access to
+                learning resources, AI assistance, teacher engagement, and
+                educational support.
               </p>
 
               <div className="p-4 bg-[#FAF9F5] rounded-lg border border-[#E7E3DA] space-y-2.5 text-xs">
 
                 <div className="font-semibold text-[#1C1917]">
-                  What QUALANTRA Premium provides:
+                  Premium capabilities
                 </div>
 
                 <div className="space-y-1.5 text-[#57534E]">
@@ -1534,32 +1207,28 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
                   <div className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-[#8C5E38] shrink-0" />
                     <span>
-                      Expanded Ali AI Assistant for
-                      in-depth practice & remediation
+                      Expanded Ali learning assistance
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-[#8C5E38] shrink-0" />
                     <span>
-                      Expanded teacher engagement with
-                      subject educators
+                      Expanded teacher engagement
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-[#8C5E38] shrink-0" />
                     <span>
-                      Full resource ecosystem and 5-year
-                      past examination archives
+                      Additional curriculum learning resources
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-[#8C5E38] shrink-0" />
                     <span>
-                      Advanced Learning Support across
-                      the continuous learning loop
+                      Additional learning support capabilities
                     </span>
                   </div>
 
@@ -1573,22 +1242,21 @@ export const LearnerPortalPage: React.FC<LearnerPortalPageProps> = ({
 
               <button
                 onClick={() => {
-                  setCurrentPlan('PREMIUM');
-                  setShowUpgradeModal(false);
-                }}
-                className="w-full sm:w-auto px-4 py-2.5 bg-[#1C1917] text-white text-xs font-semibold rounded-md hover:bg-black transition-colors cursor-pointer"
-              >
-                Switch to Premium View (Prototype)
-              </button>
-
-              <button
-                onClick={() => {
                   setShowUpgradeModal(false);
                   onNavigate('/pricing');
                 }}
+                className="w-full sm:w-auto px-4 py-2.5 bg-[#1C1917] text-white text-xs font-semibold rounded-md hover:bg-black transition-colors cursor-pointer"
+              >
+                View Premium Plans
+              </button>
+
+              <button
+                onClick={() =>
+                  setShowUpgradeModal(false)
+                }
                 className="w-full sm:w-auto px-4 py-2.5 bg-[#FAF9F5] border border-[#D6D3CD] text-[#1C1917] text-xs font-semibold rounded-md hover:bg-[#EAE7E0] transition-colors cursor-pointer"
               >
-                Compare Free and Premium Plans
+                Close
               </button>
 
             </div>

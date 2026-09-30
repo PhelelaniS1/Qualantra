@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { AppRoute } from '../types';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { QualantraLogo } from '../components/common/QualantraLogo';
 
 interface LoginPageProps {
@@ -11,8 +11,6 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const auth = useAuth();
   const [role, setRole] = useState<'learner' | 'teacher' | 'parent' | 'admin'>('learner');
-  const [email, setEmail] = useState<string>('liam.vandermerwe@school.za');
-  const [password, setPassword] = useState<string>('••••••••••••');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +20,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
     auth.signinRedirect();
   };
+
+  const roleLabel = {
+    learner: 'Learner',
+    teacher: 'Educator',
+    parent: 'Parent',
+    admin: 'School Admin',
+  }[role];
 
   return (
     <div className="min-h-screen bg-[#FAF9F5] pt-28 pb-16 px-6 sm:px-8 flex items-center justify-center">
@@ -44,7 +49,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           </div>
 
           <p className="text-xs text-[#57534E]">
-            Access your synchronous pods, teaching tools, and academic records.
+            Secure access to your QUALANTRA learning environment.
           </p>
         </div>
 
@@ -57,10 +62,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-2 gap-2 text-xs">
             <button
               type="button"
-              onClick={() => {
-                setRole('learner');
-                setEmail('liam.vandermerwe@school.za');
-              }}
+              onClick={() => setRole('learner')}
               className={`p-2 rounded border text-center transition-all cursor-pointer ${
                 role === 'learner'
                   ? 'border-[#1C1917] bg-[#FAF9F5] font-semibold text-[#1C1917]'
@@ -72,10 +74,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
             <button
               type="button"
-              onClick={() => {
-                setRole('teacher');
-                setEmail('t.dlamini@qualantra.co.za');
-              }}
+              onClick={() => setRole('teacher')}
               className={`p-2 rounded border text-center transition-all cursor-pointer ${
                 role === 'teacher'
                   ? 'border-[#1C1917] bg-[#FAF9F5] font-semibold text-[#1C1917]'
@@ -87,10 +86,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
             <button
               type="button"
-              onClick={() => {
-                setRole('parent');
-                setEmail('pieter.vdm@domain.co.za');
-              }}
+              onClick={() => setRole('parent')}
               className={`p-2 rounded border text-center transition-all cursor-pointer ${
                 role === 'parent'
                   ? 'border-[#1C1917] bg-[#FAF9F5] font-semibold text-[#1C1917]'
@@ -102,10 +98,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
             <button
               type="button"
-              onClick={() => {
-                setRole('admin');
-                setEmail('admin@capeacademic.org.za');
-              }}
+              onClick={() => setRole('admin')}
               className={`p-2 rounded border text-center transition-all cursor-pointer ${
                 role === 'admin'
                   ? 'border-[#1C1917] bg-[#FAF9F5] font-semibold text-[#1C1917]'
@@ -118,50 +111,35 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-          <div>
-            <label className="block font-medium text-[#1C1917] mb-1">
-              Email Address
-            </label>
+          <div className="rounded-lg border border-[#E7E3DA] bg-[#FAF9F5] p-4">
+            <div className="flex items-start gap-3">
+              <ShieldCheck className="w-5 h-5 text-[#57534E] mt-0.5 shrink-0" />
 
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 rounded border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
-            />
+              <div>
+                <div className="font-semibold text-[#1C1917] mb-1">
+                  Secure authentication
+                </div>
+
+                <p className="text-[11px] leading-relaxed text-[#57534E]">
+                  You'll continue to AWS Cognito to enter your QUALANTRA
+                  account credentials securely.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label className="block font-medium text-[#1C1917] mb-1">
-              Password
-            </label>
-
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 rounded border border-[#D6D3CD] bg-white text-[#1C1917] focus:outline-hidden focus:border-[#1C1917]"
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-[11px] text-[#78716C] pt-1">
-            <span>Authentication layer ready for AWS Cognito</span>
-
-            <a
-              href="#forgot"
-              className="underline hover:text-[#1C1917]"
-            >
-              Forgot password?
-            </a>
+          <div className="text-[11px] text-[#78716C]">
+            Signing in as{' '}
+            <span className="font-semibold text-[#1C1917]">
+              {roleLabel}
+            </span>
           </div>
 
           <button
             type="submit"
             className="w-full py-2.5 bg-[#1C1917] text-white font-semibold rounded hover:bg-black transition-colors cursor-pointer text-center shadow-2xs"
           >
-            Enter {role.charAt(0).toUpperCase() + role.slice(1)} Portal Preview
+            Continue to secure sign-in
           </button>
         </form>
 
