@@ -1,7 +1,11 @@
 <div align="center">
-  <img src="src/assets/images/qualantra_banner_ecosystem_1790886884008.jpg" alt="QUALANTRA — Learn. Teach. Connect." width="100%" />
+  <img src="src/assets/New%20images/Qualantra-README-Banner.png" alt="QUALANTRA — Learn. Teach. Connect." width="100%" />
 </div>
 
 # QUALANTRA
-> **Learn. Teach. Connect.**  
-> A digital school platform connecting South African learners with accredited educators and responsible AI assistance in focused 10-person digital classrooms. Built with Amazon Web Services.
+
+> **Learn. Teach. Connect.**
+>
+> A digital school built to connect learners, qualified teachers, and responsible AI in one accessible learning environment.
+
+Quality education should connect with teaching opportunity.
