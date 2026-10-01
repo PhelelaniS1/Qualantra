@@ -265,5 +265,6 @@ That is the school we are working to build.
 - **Cloud platform:** Amazon Web Services
 - **Repository:** https://github.com/PhelelaniS1/Qualantra
 - **Website:** https://qualantra.com
+- **WWW:** https://www.qualantra.com
 
 *QUALANTRA is an independent project. References to CAPS describe curriculum alignment goals and do not imply formal endorsement or affiliation with the Department of Basic Education, SACE, IEB, or any government body.*
