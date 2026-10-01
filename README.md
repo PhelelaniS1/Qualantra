@@ -3,6 +3,5 @@
 </div>
 
 # QUALANTRA
-
 > **Learn. Teach. Connect.**  
-> A South African digital school connecting learners, teachers, curriculum-aligned learning, and responsible AI assistance — built on AWS.
+> A digital school platform connecting South African learners with accredited educators and responsible AI assistance in focused 10-person digital classrooms. Built with Amazon Web Services.
