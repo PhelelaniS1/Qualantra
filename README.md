@@ -1,20 +1,7 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+  <img src="src/assets/images/qualantra_banner_ecosystem_1790886884008.jpg" alt="QUALANTRA — Learn. Teach. Connect." width="100%" />
 </div>
 
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/99e7bf5d-b3bf-42e6-99ff-f55122357d5d
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+# QUALANTRA
+> **Learn. Teach. Connect.**  
+> A digital school platform connecting South African learners with accredited educators and responsible AI assistance in focused 10-person digital classrooms. Built with Amazon Web Services.
